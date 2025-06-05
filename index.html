@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat with AI</title>
+  <script>
+    async function sendMessage() {
+      const userInput = document.getElementById("userInput").value;
+      if (!userInput) return;
+
+      addMessage("You", userInput);
+
+      // Clear input
+      document.getElementById("userInput").value = "";
+
+      try {
+        const response = await fetch("http://localhost:8000/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: userInput }),
+        });
+
+        const data = await response.json();
+        const botMessage = data.choices[0].message.content;
+        addMessage("Bot", botMessage);
+      } catch (error) {
+        addMessage("Bot", "❌ Error: Failed to reach server.");
+        console.error(error);
+      }
+    }
+
+    function addMessage(sender, message) {
+      const chatBox = document.getElementById("chatBox");
+      const messageElement = document.createElement("div");
+      messageElement.classList.add("mb-4");
+
+      messageElement.innerHTML = `
+        <div class="font-bold text-gray-700">${sender}:</div>
+        <div class="ml-2 text-gray-900">${message}</div>
+      `;
+      chatBox.appendChild(messageElement);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
+    <h1 class="text-2xl font-bold text-center text-blue-600">AI Chatbot</h1>
+    <div id="chatBox" class="h-96 overflow-y-scroll p-4 bg-gray-50 border rounded"></div>
+    <div class="flex">
+      <input
+        id="userInput"
+        type="text"
+        class="flex-1 border rounded-l px-4 py-2 focus:outline-none"
+        placeholder="Type your message..."
+        onkeydown="if(event.key==='Enter') sendMessage()"
+      />
+      <button
+        onclick="sendMessage()"
+        class="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+</body>
+</html>

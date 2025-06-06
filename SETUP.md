@@ -22,7 +22,7 @@ Edit
 pip install fastapi uvicorn requests
 Set your OpenRouter API key
 
-Open app.py
+Open main.py
 
 Replace the placeholder OPENROUTER_API_KEY with your actual API key:
 
